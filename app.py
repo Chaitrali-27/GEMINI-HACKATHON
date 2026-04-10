@@ -8,8 +8,7 @@ warnings.filterwarnings("ignore")
 # ─────────────────────────────────────────
 # LOAD MODEL
 # ─────────────────────────────────────────
-MODEL_PATH = "rul_multimode_ensemble.joblib"
-
+MODEL_PATH = "federated_results.joblib"
 clf_ens = reg_ens = scaler = label_encoder = feature_cols = None
 
 if os.path.exists(MODEL_PATH):
