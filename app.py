@@ -1,42 +1,39 @@
-import streamlit as st
+from flask import Flask, request, jsonify
 import joblib
-import numpy as np
 import os
+
+app = Flask(__name__)
 
 # ─────────────────────────────────────────
 # LOAD MODEL
 # ─────────────────────────────────────────
 MODEL_PATH = "federated_results.joblib"
 
-model = None
+model_data = None
 
 if os.path.exists(MODEL_PATH):
-    bundle = joblib.load(MODEL_PATH)
-    
-    st.write("DEBUG - Model content:", bundle)  # show structure
-    
-    # Try common formats
-    if isinstance(bundle, dict):
-        model = bundle.get("model", None)
-    else:
-        model = bundle
+    model_data = joblib.load(MODEL_PATH)
 else:
-    st.error("❌ Model not found")
+    print("Model not found")
 
 # ─────────────────────────────────────────
-# STREAMLIT UI
+# HOME ROUTE
 # ─────────────────────────────────────────
-st.title("🔧 SmartPredict ML System")
+@app.route("/")
+def home():
+    return "✅ SmartPredict Flask App is Running!"
 
-# Simple input (since we don’t know features yet)
-input_val = st.number_input("Enter input value")
+# ─────────────────────────────────────────
+# VIEW MODEL DATA
+# ─────────────────────────────────────────
+@app.route("/data")
+def data():
+    if model_data is None:
+        return jsonify({"error": "Model not loaded"})
+    return jsonify(model_data)
 
-if st.button("Predict"):
-    if model is not None:
-        try:
-            result = model.predict([[input_val]])
-            st.success(f"Prediction: {result}")
-        except Exception as e:
-            st.error(f"Prediction error: {e}")
-    else:
-        st.warning("Model not loaded properly")
+# ─────────────────────────────────────────
+# RUN
+# ─────────────────────────────────────────
+if __name__ == "__main__":
+    app.run()
